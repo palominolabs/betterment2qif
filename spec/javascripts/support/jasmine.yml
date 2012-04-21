@@ -11,8 +11,8 @@
 #   - dist/**/*.js
 #
 src_files:
-    - public/javascripts/**/*.js
     - QifBuilder.js
+    - BettermentQifBuilder.js
 
 # stylesheets
 #
