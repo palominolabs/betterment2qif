@@ -4,8 +4,8 @@ describe('bettermentActivityToQif', function () {
     var bettermentActivityToQif;
     var date;
 
-    function makeTestXml(innerXml) {
-        return '<?xml version="1.0" encoding="UTF-8"?><activities>' + innerXml + '</activities>';
+    function makeTestXmlDoc(innerXml) {
+        return $($.parseXML('<?xml version="1.0" encoding="UTF-8"?><activities>' + innerXml + '</activities>'));
     }
 
     var COMMON_XML =
@@ -14,8 +14,8 @@ describe('bettermentActivityToQif', function () {
             + '<accountIsMaster>true</accountIsMaster>'
             + '<accountName>Account Name</accountName>'
             + '<txnID>200000</txnID>'
-            + '<date>2010/01/01</date>'
-            + '<dateString>Jan 1</dateString>'
+            + '<date>2010/09/10</date>'
+            + '<dateString>Sept 10</dateString>'
             + '<documentHash>XYZ</documentHash>'
             + '<pending>false</pending>'
             + '<failed>false</failed>';
@@ -78,9 +78,9 @@ describe('bettermentActivityToQif', function () {
 
     beforeEach(function () {
         date = new Date(0);
+        date.setDate(10);
+        date.setMonth(8);
         date.setYear(2010);
-        date.setMonth(0);
-        date.setDate(1);
 
         qifBuilder = new QifBuilder();
         bettermentQifBuilder = new BettermentQifBuilder(qifBuilder);
@@ -96,12 +96,12 @@ describe('bettermentActivityToQif', function () {
     });
 
     it('should return result of qif builder', function () {
-        expect(bettermentActivityToQif.convertBettermentActivityXMLString('<asdf></asdf>')).toEqual('badger');
+        expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML))).toEqual('badger');
     });
 
     describe('account bonus', function () {
         it('makes correct betterment qif builder call', function () {
-            bettermentActivityToQif.convertBettermentActivityXMLString(makeTestXml(ACCOUNT_BONUS_XML));
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML));
 
             expect(bettermentQifBuilder.accountBonus).toHaveBeenCalledWith(date, 10.10);
         });
@@ -109,7 +109,7 @@ describe('bettermentActivityToQif', function () {
 
     describe('fee', function () {
         it('makes correct betterment qif builder call', function () {
-            bettermentActivityToQif.convertBettermentActivityXMLString(makeTestXml(FEE_XML));
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(FEE_XML));
 
             expect(bettermentQifBuilder.fee).toHaveBeenCalledWith(date, -57);
         });
@@ -117,7 +117,7 @@ describe('bettermentActivityToQif', function () {
 
     describe('dividend', function () {
         it('makes correct betterment qif builder call', function () {
-            bettermentActivityToQif.convertBettermentActivityXMLString(makeTestXml(DIVIDEND_XML));
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(DIVIDEND_XML));
 
             expect(bettermentQifBuilder.dividend).toHaveBeenCalledWith(date, 24.68);
         });
@@ -125,7 +125,7 @@ describe('bettermentActivityToQif', function () {
 
     describe('deposit', function () {
         it('makes correct betterment qif builder call', function () {
-            bettermentActivityToQif.convertBettermentActivityXMLString(makeTestXml(DEPOSIT_XML));
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(DEPOSIT_XML));
 
             expect(bettermentQifBuilder.deposit).toHaveBeenCalledWith(date, 50.50);
         });
@@ -133,13 +133,13 @@ describe('bettermentActivityToQif', function () {
 
     describe('market change', function () {
         it('makes correct betterment qif builder call', function () {
-            bettermentActivityToQif.convertBettermentActivityXMLString(makeTestXml(MARKET_CHANGE_XML));
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(MARKET_CHANGE_XML));
 
             expect(bettermentQifBuilder.marketChange).toHaveBeenCalledWith(date, -12.21);
         });
 
         it('makes correct betterment qif builder call for nested market changes', function () {
-            bettermentActivityToQif.convertBettermentActivityXMLString(makeTestXml(NESTED_MARKET_CHANGE_XML));
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(NESTED_MARKET_CHANGE_XML));
 
             expect(bettermentQifBuilder.marketChange).toHaveBeenCalledWith(date, 48.48);
             expect(bettermentQifBuilder.marketChange).toHaveBeenCalledOnce();

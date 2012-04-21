@@ -1,53 +1,58 @@
 var INVESTMENT_ACCOUNT_HEADER = "!Type:Invst";
-var MONTH_NAMES =  [
-    "January", "February", "March",
-    "April", "May", "June",
-    "July", "August", "September",
-    "October", "November", "December"
-];
 
 function QifBuilder() {
 
-	var lines = [INVESTMENT_ACCOUNT_HEADER];
+    var lines = [INVESTMENT_ACCOUNT_HEADER];
 
-	function formatDate(date) {
-		return [date.getDate(), MONTH_NAMES[date.getMonth()], date.getFullYear()].join(' ');
-	}
+    function formatDate(date) {
+        console.log(date);
 
-	function addRecord(date, type, newLines) {
-		lines.push("D" + formatDate(date));
-		if (type) {
-			lines.push("N" + type);
-		}
-		lines = lines.concat(newLines);
-		lines.push("^", "");
-	}
+        var month = '' + (date.getMonth() + 1);
+        if (month.length == 1) {
+            month = '0' + month;
+        }
 
-	this.toQifString = function() {
-		return lines.join("\n");
-	};
+        var dayOfMonth = '' + date.getDate();
+        if (dayOfMonth.length == 1) {
+            dayOfMonth = '0' + dayOfMonth;
+        }
+        return [date.getFullYear(), month, dayOfMonth].join('-');
+    }
 
-	this.dividend = function(date, stockSymbol, amount) {
-		addRecord(date, "Dividend", ["Y" + stockSymbol, "T" + amount]);
-	};
+    function addRecord(date, type, newLines) {
+        lines.push("D" + formatDate(date));
+        if (type) {
+            lines.push("N" + type);
+        }
+        lines = lines.concat(newLines);
+        lines.push("^", "");
+    }
 
-	this.buy = function(date, stockSymbol, numShares, pricePerShare) {
-		addRecord(date, "Buy", ["Y" + stockSymbol, "I" + pricePerShare, "Q" + numShares]);
-	};
+    this.toQifString = function () {
+        return lines.join("\n");
+    };
 
-	this.sell = function(date, stockSymbol, numShares, pricePerShare) {
-		addRecord(date, "Sell", ["Y" + stockSymbol, "I" + pricePerShare, "Q" + numShares]);
-	};
+    this.dividend = function (date, stockSymbol, amount) {
+        addRecord(date, "Dividend", ["Y" + stockSymbol, "T" + amount]);
+    };
 
-	this.adjust = function(date, amount, options) {
-		options = options || {};
-		var newLines = ["T" + amount];
-		if (options.payee) {
-			newLines.push("P" + options.payee);
-		}
-		if (options.memo) {
-			newLines.push("M" + options.memo);
-		}
-		addRecord(date, undefined, newLines);
-	};
+    this.buy = function (date, stockSymbol, numShares, pricePerShare) {
+        addRecord(date, "Buy", ["Y" + stockSymbol, "I" + pricePerShare, "Q" + numShares]);
+    };
+
+    this.sell = function (date, stockSymbol, numShares, pricePerShare) {
+        addRecord(date, "Sell", ["Y" + stockSymbol, "I" + pricePerShare, "Q" + numShares]);
+    };
+
+    this.adjust = function (date, amount, options) {
+        options = options || {};
+        var newLines = ["T" + amount];
+        if (options.payee) {
+            newLines.push("P" + options.payee);
+        }
+        if (options.memo) {
+            newLines.push("M" + options.memo);
+        }
+        addRecord(date, undefined, newLines);
+    };
 }
