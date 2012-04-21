@@ -13,19 +13,23 @@ end
 namespace :compile do
   task :chrome do
     extension_manifest = YAML.load(open('extension_manifest.yml'))
+    extension_manifest['manifest_version'] = 2
 
-    FileUtils.mkdir_p('build/chrome')
+    output_directory = 'build/chrome'
 
-    FileUtils.cp_r('shared', 'build/chrome/shared')
-    FileUtils.cp_r('vendor', 'build/chrome/vendor')
-    FileUtils.cp_r('chrome', 'build/chrome/chrome')
+    FileUtils.rm_rf(output_directory)
+    FileUtils.mkdir_p(output_directory)
 
-    js_files = Dir['build/chrome/**/*.js'].map{|js| js.sub('build/chrome/', '')}
+    FileUtils.cp_r('shared', output_directory)
+    FileUtils.cp_r('vendor', output_directory)
+    FileUtils.cp_r('chrome', output_directory)
+
+    js_files = Dir["#{output_directory}/**/*.js"].map{|js| js.sub("#{output_directory}/", '')}
     extension_manifest["content_scripts"].each do |content_script|
       content_script["js"] = js_files
     end
 
-    fh = open('build/chrome/manifest.json', 'w+')
+    fh = open(File.join(output_directory, 'manifest.json'), 'w+')
     fh.write(JSON.generate(extension_manifest))
     fh.close
 
