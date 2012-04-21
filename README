@@ -1,0 +1,6 @@
+== Running tests ==
+The easiest way to run the tests is by running
+    bundle exec guard.
+They will be re-run whenever files are changed. On my machine the colorizing doesn't work right so I have to do
+this to strip the incorrect control characters:
+    bundle exec guard | sed -e 's/3\[[^m]\{1,\}m//g'
