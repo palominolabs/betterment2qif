@@ -24,7 +24,9 @@ namespace :compile do
     FileUtils.cp_r('vendor', output_directory)
     FileUtils.cp_r('chrome', output_directory)
 
-    js_files = Dir["#{output_directory}/**/*.js"].map{|js| js.sub("#{output_directory}/", '')}
+    js_files = Dir["#{output_directory}/vendor/**/*.js"].map{|js| js.sub("#{output_directory}/", '')}
+    js_files += Dir["#{output_directory}/shared/**/*.js"].map{|js| js.sub("#{output_directory}/", '')}
+    js_files += Dir["#{output_directory}/chrome/**/*.js"].map{|js| js.sub("#{output_directory}/", '')}
     extension_manifest["content_scripts"].each do |content_script|
       content_script["js"] = js_files
     end

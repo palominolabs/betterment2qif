@@ -4,6 +4,10 @@ function BettermentQifBuilder(qifBuilder) {
     this.bettermentSharePrice = 100;
     this.bettermentSharesHeld = 0;
 
+    this.toQifString = function () {
+        return qifBuilder.toQifString();
+    };
+
     this.marketChange = function (date, amount) {
         // The amount is the change in balance in account. It needs to be
         // converted into the change in share price for the imaginary
