@@ -5,8 +5,6 @@ function QifBuilder() {
     var lines = [INVESTMENT_ACCOUNT_HEADER];
 
     function formatDate(date) {
-        console.log(date);
-
         var month = '' + (date.getMonth() + 1);
         if (month.length == 1) {
             month = '0' + month;

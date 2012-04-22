@@ -81,3 +81,4 @@ DEPENDENCIES
   jasmine
   jasmine-headless-webkit!
   json
+  sprockets

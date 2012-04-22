@@ -11,8 +11,10 @@
 #   - dist/**/*.js
 #
 src_files:
-    - vendor/**/*.js
-    - shared/**/*.js
+    - src/vendor/**/*.js
+    - src/shared/BettermentActivityToQif.js
+    - src/shared/BettermentQifBuilder.js
+    - src/shared/QifBuilder.js
 
 # stylesheets
 #

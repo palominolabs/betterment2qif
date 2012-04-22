@@ -1,7 +1,8 @@
 name: My First Extension
 version: "1.0"
 description: The first extension that I made
+author: Manuel Wudka-Robles
+id: jid1-7OkPyi2O3TIK4w
 content_scripts:
   - matches:
     - https://wwws.betterment.com/*
-    css: []
