@@ -1,5 +1,6 @@
 source :rubygems
 
+gem 'crxmake'
 gem 'guard'
 gem 'guard-jasmine-headless-webkit'
 gem 'jasmine'

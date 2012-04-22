@@ -1,3 +1,6 @@
+== Generating a key for signing Chrome extensions ==
+openssl genrsa 1024 > chrome_private_key.pem
+
 == Running tests ==
 The easiest way to run the tests is by running
     bundle exec guard.

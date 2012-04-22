@@ -2,3 +2,4 @@
 .jasmine-headless-webkit
 .jhw-cache
 build
+*.pem
