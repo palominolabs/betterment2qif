@@ -40,6 +40,10 @@ task :sprockets do
 end
 
 namespace :compile do
+  def generic_extension_manifest
+    open('extension_manifest.yml', 'r') { |fh| GenericManifestReader.new(YAML.load(fh)) }
+  end
+
   desc "Compile all versions of the extension"
   task all: [:chrome, :firefox] do
   end
@@ -53,9 +57,6 @@ namespace :compile do
     FileUtils.mkdir_p(chrome_build_dir)
 
     FileUtils.cp(File.join(intermediates_dir, 'chrome.js'), File.join(chrome_build_dir, 'chrome.js'))
-
-    generic_extension_manifest = nil
-    open('extension_manifest.yml', 'r') { |fh| generic_extension_manifest = GenericManifestReader.new(YAML.load(fh)) }
 
     open(File.join(chrome_build_dir, 'manifest.json'), 'w+') { |fh| fh.write(ChromeManifestBuilder.new(generic_extension_manifest).build) }
   end
@@ -72,18 +73,14 @@ namespace :compile do
     FileUtils.mkdir_p(firefox_lib_dir)
     FileUtils.mkdir_p(firefox_data_dir)
 
-    extension_manifest = YAML.load(open('extension_manifest.yml'))
-
     page_mod = <<EOS
   const pageMod = require('page-mod');
   const data = require('self').data;
 EOS
 
-    match_rule = extension_manifest['content_script_matches']
-
     page_mod += <<EOS
   pageMod.PageMod({
-  	include: '#{match_rule}',
+  	include: '#{generic_extension_manifest.content_script_matches}',
   	contentScriptWhen: 'ready',
   	contentScriptFile: data.url('firefox.js')
   });
@@ -94,15 +91,7 @@ EOS
     FileUtils.cp(File.join(intermediates_dir, 'firefox.js'), File.join(firefox_data_dir, 'firefox.js'))
 
     open(File.join(firefox_build_dir, 'package.json'), 'w') do |fh|
-      fh.write(JSON.generate({
-                                 name: extension_manifest['name'].downcase.gsub(/[^a-z0-9]+/, '_'),
-                                 license: 'MPL 2.0',
-                                 author: extension_manifest['author'],
-                                 version: extension_manifest['version'],
-                                 fullName: extension_manifest['name'],
-                                 id: extension_manifest['id'],
-                                 description: extension_manifest['description']
-                             }))
+      fh.write(FirefoxManifestBuilder.new(generic_extension_manifest).build)
     end
   end
 end
