@@ -36,7 +36,8 @@ describe ChromeManifestBuilder do
       @chrome_manifest[:content_scripts].should == [
           matches: %w(somesite.com),
           css: [],
-          js: %w(chrome.js)
+          js: %w(chrome.js),
+          run_at: 'document_end'
       ]
     end
 

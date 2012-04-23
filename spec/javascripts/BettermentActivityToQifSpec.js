@@ -96,7 +96,7 @@ describe('bettermentActivityToQif', function () {
     });
 
     it('should return result of qif builder', function () {
-        expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML))).toEqual('badger');
+        expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).qif).toEqual('badger');
     });
 
     describe('account bonus', function () {
@@ -104,6 +104,10 @@ describe('bettermentActivityToQif', function () {
             bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML));
 
             expect(bettermentQifBuilder.accountBonus).toHaveBeenCalledWith(date, 10.10);
+        });
+
+        it('counts as 1 transaction', function () {
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).numTransactions).toEqual(1);
         });
     });
 
@@ -113,6 +117,10 @@ describe('bettermentActivityToQif', function () {
 
             expect(bettermentQifBuilder.fee).toHaveBeenCalledWith(date, -57);
         });
+
+        it('counts as 1 transaction', function () {
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(FEE_XML)).numTransactions).toEqual(1);
+        });
     });
 
     describe('dividend', function () {
@@ -121,6 +129,10 @@ describe('bettermentActivityToQif', function () {
 
             expect(bettermentQifBuilder.dividend).toHaveBeenCalledWith(date, 24.68);
         });
+
+        it('counts as 1 transaction', function () {
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(DIVIDEND_XML)).numTransactions).toEqual(1);
+        });
     });
 
     describe('deposit', function () {
@@ -128,6 +140,10 @@ describe('bettermentActivityToQif', function () {
             bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(DEPOSIT_XML));
 
             expect(bettermentQifBuilder.deposit).toHaveBeenCalledWith(date, 50.50);
+        });
+
+        it('counts as 1 transaction', function () {
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(DEPOSIT_XML)).numTransactions).toEqual(1);
         });
     });
 
@@ -138,11 +154,19 @@ describe('bettermentActivityToQif', function () {
             expect(bettermentQifBuilder.marketChange).toHaveBeenCalledWith(date, -12.21);
         });
 
+        it('counts as 1 transaction', function () {
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(MARKET_CHANGE_XML)).numTransactions).toEqual(1);
+        });
+
         it('makes correct betterment qif builder call for nested market changes', function () {
             bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(NESTED_MARKET_CHANGE_XML));
 
             expect(bettermentQifBuilder.marketChange).toHaveBeenCalledWith(date, 48.48);
             expect(bettermentQifBuilder.marketChange).toHaveBeenCalledOnce();
+        });
+
+        it('counts as 1 transaction for nested market changes', function () {
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(NESTED_MARKET_CHANGE_XML)).numTransactions).toEqual(1);
         });
     });
 });

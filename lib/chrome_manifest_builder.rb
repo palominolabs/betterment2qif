@@ -12,7 +12,8 @@ class ChromeManifestBuilder
                       content_scripts: [{
                                             matches: [@generic_manifest_reader.content_script_matches],
                                             css: [],
-                                            js: %w(chrome.js)
+                                            js: %w(chrome.js),
+                                            run_at: 'document_end'
                                         }],
                   })
   end

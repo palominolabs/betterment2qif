@@ -42,13 +42,18 @@ function BettermentActivityToQif(bettermentQifBuilder) {
     this.convertBettermentActivityXMLDoc = function (xmlDoc) {
         var transactions = parseActivityXmlString(xmlDoc);
 
+        var numTransactions = 0;
         $.each(transactions, function (idx, txn) {
             var functionName = TRANSACTION_HANDLERS[txn.type];
-            if(functionName) {
+            if (functionName) {
                 bettermentQifBuilder[functionName](txn.date, txn.amount);
+                numTransactions++;
             }
         });
 
-        return bettermentQifBuilder.toQifString();
+        return {
+            qif:bettermentQifBuilder.toQifString(),
+            numTransactions:numTransactions
+        };
     };
 }

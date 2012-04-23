@@ -3,4 +3,4 @@ version: "1.0"
 description: The first extension that I made
 author: Manuel Wudka-Robles
 firefox_id: jid1-7OkPyi2O3TIK4w
-content_script_matches: https://wwws.betterment.com/*
+content_script_matches: https://wwws.betterment.com/App.html*
