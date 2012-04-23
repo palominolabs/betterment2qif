@@ -22,21 +22,11 @@ desc "Bundles all JS files into a single huge file"
 task :sprockets do
   logger.info("Building bundled JS files")
 
-  BUNDLES = %w( chrome.js firefox.js )
-
-  sprockets = Sprockets::Environment.new(project_root_dir) do |env|
-    env.logger = logger
-  end
+  sprockets = Sprockets::Environment.new(project_root_dir) { |env| env.logger = logger }
 
   sprockets.append_path(source_dir.to_s)
 
-  BUNDLES.each do |bundle|
-    assets = sprockets.find_asset(bundle)
-    _, basename = assets.pathname.to_s.split('/')[-2..-1]
-
-    assets.write_to(intermediates_dir.join(basename))
-  end
-
+  %w( chrome.js firefox.js ).each { |bundle| sprockets.find_asset(bundle).write_to(intermediates_dir.join(bundle)) }
 end
 
 namespace :compile do
