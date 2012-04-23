@@ -9,6 +9,7 @@ class GenericManifestReader
     end
 
     raise "content_script_matches must be a string" unless generic_manifest_hash['content_script_matches'].is_a?(String)
+    raise "content_script_matches must not contain single quotes" if generic_manifest_hash['content_script_matches'].include?("'")
 
     @name = generic_manifest_hash['name']
     @version = generic_manifest_hash['version']

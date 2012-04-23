@@ -15,6 +15,18 @@ class FirefoxManifestBuilder
                   })
   end
 
+  def build_mainjs
+    return <<EOJS
+const pageMod = require('page-mod');
+const data = require('self').data;
+pageMod.PageMod({
+  include: '#{@generic_manifest.content_script_matches}',
+  contentScriptWhen: 'ready',
+  contentScriptFile: data.url('firefox.js')
+});
+EOJS
+  end
+
   private
 
   def generate_short_name(long_name)

@@ -73,25 +73,14 @@ namespace :compile do
     FileUtils.mkdir_p(firefox_lib_dir)
     FileUtils.mkdir_p(firefox_data_dir)
 
-    page_mod = <<EOS
-  const pageMod = require('page-mod');
-  const data = require('self').data;
-EOS
+    firefox_manifest_builder = FirefoxManifestBuilder.new(generic_extension_manifest)
 
-    page_mod += <<EOS
-  pageMod.PageMod({
-  	include: '#{generic_extension_manifest.content_script_matches}',
-  	contentScriptWhen: 'ready',
-  	contentScriptFile: data.url('firefox.js')
-  });
-EOS
-
-    open(File.join(firefox_lib_dir, 'main.js'), 'w') { |fh| fh.write(page_mod) }
+    open(File.join(firefox_lib_dir, 'main.js'), 'w') { |fh| fh.write(firefox_manifest_builder.build_mainjs) }
 
     FileUtils.cp(File.join(intermediates_dir, 'firefox.js'), File.join(firefox_data_dir, 'firefox.js'))
 
     open(File.join(firefox_build_dir, 'package.json'), 'w') do |fh|
-      fh.write(FirefoxManifestBuilder.new(generic_extension_manifest).build)
+      fh.write(firefox_manifest_builder.build)
     end
   end
 end

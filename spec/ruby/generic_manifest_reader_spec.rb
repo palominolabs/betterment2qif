@@ -38,6 +38,11 @@ describe GenericManifestReader do
       lambda { GenericManifestReader.new(@all_options) }.should raise_error "content_script_matches must be a string"
     end
 
+    it "throws if content script contains single quote" do
+      @all_options['content_script_matches'] = "www.evil'domain.com"
+      lambda { GenericManifestReader.new(@all_options) }.should raise_error "content_script_matches must not contain single quotes"
+    end
+
     it "throws if no description" do
       @all_options.delete('description')
       lambda { GenericManifestReader.new(@all_options) }.should raise_error "description required"

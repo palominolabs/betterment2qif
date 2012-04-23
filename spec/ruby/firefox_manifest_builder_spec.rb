@@ -1,20 +1,21 @@
 require_relative 'spec_helper'
 
 describe FirefoxManifestBuilder do
+  before :each do
+    generic_manifest = {
+        'name' => 'Fake ff extension',
+        'description' => "It's for testing",
+        'version' => 9.9,
+        'author' => 'Meee',
+        'content_script_matches' => 'somesite.com',
+        'firefox_id' => '123'
+    }
+    gmr = GenericManifestReader.new(generic_manifest)
+    @fmb = FirefoxManifestBuilder.new(gmr)
+    @ff_manifest = JSON.parse(@fmb.build, :symbolize_names => true)
+  end
+
   describe '#build' do
-    before :each do
-      generic_manifest = {
-          'name' => 'Fake ff extension',
-          'description' => "It's for testing",
-          'version' => 9.9,
-          'author' => 'Meee',
-          'content_script_matches' => 'somesite.com',
-          'firefox_id' => '123'
-      }
-      gmr = GenericManifestReader.new(generic_manifest)
-      fmb = FirefoxManifestBuilder.new(gmr)
-      @ff_manifest = JSON.parse(fmb.build, :symbolize_names => true)
-    end
 
     it "sets name to short name" do
       @ff_manifest[:name].should == 'fake_ff_extension'
@@ -56,6 +57,20 @@ describe FirefoxManifestBuilder do
 
     it "removes non-letters and symbols" do
       @fmb.send(:generate_short_name, '>_letters,numb3333rsspaces      !!!?').should == '_letters_numb3333rsspaces_'
+    end
+  end
+
+  describe '#build_mainjs' do
+    it "returns correct JS" do
+      @fmb.build_mainjs.should ==<<EOJS
+const pageMod = require('page-mod');
+const data = require('self').data;
+pageMod.PageMod({
+  include: 'somesite.com',
+  contentScriptWhen: 'ready',
+  contentScriptFile: data.url('firefox.js')
+});
+EOJS
     end
   end
 end
