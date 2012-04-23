@@ -17,13 +17,16 @@ release_dir = build_dir.join('release')
 firefox_release_dir = release_dir.join('firefox')
 chrome_release_dir = release_dir.join('chrome')
 
+logger = Logger.new(STDOUT)
+
 desc "Bundles all JS files into a single huge file"
 task :sprockets do
-  LOGGER = Logger.new(STDOUT)
+  logger.info("Building bundled JS files")
+
   BUNDLES = %w( chrome.js firefox.js )
 
   sprockets = Sprockets::Environment.new(project_root_dir) do |env|
-    env.logger = LOGGER
+    env.logger = logger
   end
 
   sprockets.append_path(source_dir.to_s)
@@ -38,8 +41,14 @@ task :sprockets do
 end
 
 namespace :compile do
+  desc "Compile all versions of the extension"
+  task all: [:chrome, :firefox] do
+  end
+
   desc "Build an unpacked chrome extension"
   task :chrome do
+    logger.info("Compiling chrome extension")
+
     extension_manifest = YAML.load(open('extension_manifest.yml'))
     extension_manifest['manifest_version'] = 2
 
@@ -61,6 +70,8 @@ namespace :compile do
 
   desc "Build umpackaged version of FF extension for testing"
   task firefox: [:sprockets] do
+    logger.info("Compiling firefox extension")
+
     firefox_lib_dir = File.join(firefox_release_dir, 'lib')
     firefox_data_dir = File.join(firefox_release_dir, 'data')
 
@@ -111,9 +122,10 @@ end
 
 namespace :release do
 
-
   desc "Create zip and crx versions for Chrome"
   task chrome: [:sprockets] do
+    logger.info("Creating Chrome zip/crx archives")
+
     FileUtils.rm_rf(chrome_release_dir)
     FileUtils.mkdir_p(chrome_release_dir)
 
