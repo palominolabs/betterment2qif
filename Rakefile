@@ -11,10 +11,10 @@ source_dir = project_root_dir.join('src')
 
 build_dir = project_root_dir.join('build')
 intermediates_dir = build_dir.join('intermediates')
-chrome_build_directory = build_dir.join('chrome')
+chrome_build_dir = build_dir.join('chrome')
+firefox_build_dir = build_dir.join('firefox')
 
 release_dir = build_dir.join('release')
-firefox_release_dir = release_dir.join('firefox')
 
 logger = Logger.new(STDOUT)
 
@@ -49,25 +49,25 @@ namespace :compile do
     logger.info("Compiling chrome extension")
 
 
-    FileUtils.rm_rf(chrome_build_directory)
-    FileUtils.mkdir_p(chrome_build_directory)
+    FileUtils.rm_rf(chrome_build_dir)
+    FileUtils.mkdir_p(chrome_build_dir)
 
-    FileUtils.cp(File.join(intermediates_dir, 'chrome.js'), File.join(chrome_build_directory, 'chrome.js'))
+    FileUtils.cp(File.join(intermediates_dir, 'chrome.js'), File.join(chrome_build_dir, 'chrome.js'))
 
     generic_extension_manifest = nil
     open('extension_manifest.yml', 'r') { |fh| generic_extension_manifest = GenericManifestReader.new(YAML.load(fh)) }
 
-    open(File.join(chrome_build_directory, 'manifest.json'), 'w+') { |fh| fh.write(ChromeManifestBuilder.new(generic_extension_manifest).build) }
+    open(File.join(chrome_build_dir, 'manifest.json'), 'w+') { |fh| fh.write(ChromeManifestBuilder.new(generic_extension_manifest).build) }
   end
 
   desc "Build umpackaged version of FF extension for testing"
   task firefox: [:sprockets] do
     logger.info("Compiling firefox extension")
 
-    firefox_lib_dir = File.join(firefox_release_dir, 'lib')
-    firefox_data_dir = File.join(firefox_release_dir, 'data')
+    firefox_lib_dir = File.join(firefox_build_dir, 'lib')
+    firefox_data_dir = File.join(firefox_build_dir, 'data')
 
-    FileUtils.rm_rf(firefox_release_dir)
+    FileUtils.rm_rf(firefox_build_dir)
 
     FileUtils.mkdir_p(firefox_lib_dir)
     FileUtils.mkdir_p(firefox_data_dir)
@@ -79,26 +79,21 @@ namespace :compile do
   const data = require('self').data;
 EOS
 
-    extension_manifest["content_scripts"].each do |content_script|
-      match_rules = content_script['matches']
+    match_rule = extension_manifest['content_script_matches']
 
-      raise "Only supports one match rule" unless match_rules.length == 1
-      match_rule = match_rules.first
-
-      page_mod += <<EOS
+    page_mod += <<EOS
   pageMod.PageMod({
   	include: '#{match_rule}',
   	contentScriptWhen: 'ready',
   	contentScriptFile: data.url('firefox.js')
   });
 EOS
-    end
 
     open(File.join(firefox_lib_dir, 'main.js'), 'w') { |fh| fh.write(page_mod) }
 
     FileUtils.cp(File.join(intermediates_dir, 'firefox.js'), File.join(firefox_data_dir, 'firefox.js'))
 
-    open(File.join(firefox_release_dir, 'package.json'), 'w') do |fh|
+    open(File.join(firefox_build_dir, 'package.json'), 'w') do |fh|
       fh.write(JSON.generate({
                                  name: extension_manifest['name'].downcase.gsub(/[^a-z0-9]+/, '_'),
                                  license: 'MPL 2.0',
@@ -119,7 +114,7 @@ namespace :release do
     logger.info("Creating Chrome zip/crx archives")
 
     defaults = {
-        ex_dir: chrome_build_directory,
+        ex_dir: chrome_build_dir,
         pkey: './chrome_private_key.pem',
         verbose: true,
     }
