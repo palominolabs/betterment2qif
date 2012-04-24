@@ -8,8 +8,7 @@ $('a').html('Export QIF').attr('href', '#').prependTo($('body')).click(function 
             var conversionResult = bettermentActivityToQif.convertBettermentActivityXMLDoc($(xml));
 
             if (conversionResult.numTransactions > 0) {
-                var dataUri = "data:text/plain;base64," + window.btoa(conversionResult.qif);
-                window.open(dataUri, '_blank');
+                window.open("data:text/plain;base64," + window.btoa(conversionResult.qif), "_blank");
             } else {
                 alert('No transactions');
             }

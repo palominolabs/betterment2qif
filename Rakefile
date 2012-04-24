@@ -13,6 +13,7 @@ build_dir = project_root_dir.join('build')
 intermediates_dir = build_dir.join('intermediates')
 chrome_build_dir = build_dir.join('chrome')
 firefox_build_dir = build_dir.join('firefox')
+safari_build_dir = build_dir.join('safari.safariextension')
 
 release_dir = build_dir.join('release')
 
@@ -26,7 +27,7 @@ task :sprockets do
 
   sprockets.append_path(source_dir.to_s)
 
-  %w( chrome.js firefox.js ).each { |bundle| sprockets.find_asset(bundle).write_to(intermediates_dir.join(bundle)) }
+  %w( chrome.js firefox.js safari.js ).each { |bundle| sprockets.find_asset(bundle).write_to(intermediates_dir.join(bundle)) }
 end
 
 namespace :compile do
@@ -35,7 +36,7 @@ namespace :compile do
   end
 
   desc "Compile all versions of the extension"
-  task all: [:chrome, :firefox] do
+  task all: [:chrome, :firefox, :safari] do
   end
 
   desc "Build an unpacked chrome extension"
@@ -71,6 +72,23 @@ namespace :compile do
 
     open(File.join(firefox_build_dir, 'package.json'), 'w') do |fh|
       fh.write(firefox_manifest_builder.build)
+    end
+  end
+
+  desc "Build unpackaged version of safari extension"
+  task safari: [:sprockets] do
+    logger.info("Compiling safari extension")
+
+    FileUtils.rm_rf(safari_build_dir)
+
+    FileUtils.mkdir_p(safari_build_dir)
+
+    safari_manifest_builder = SafariManifestBuilder.new(generic_extension_manifest)
+
+    FileUtils.cp(File.join(intermediates_dir, 'safari.js'), File.join(safari_build_dir, 'safari.js'))
+
+    open(File.join(safari_build_dir, 'Info.plist'), 'w') do |fh|
+      fh.write(safari_manifest_builder.build)
     end
   end
 end

@@ -1,5 +1,5 @@
 class GenericManifestReader
-  ATTRIBUTES = [:name, :version, :author, :content_script_matches, :firefox_id, :description].freeze
+  ATTRIBUTES = [:name, :version, :author, :content_script_matches, :firefox_id, :description, :cfbundleversion, :cfbundleidentifier].freeze
 
   ATTRIBUTES.each { |attr| attr_reader(attr) }
 
@@ -17,6 +17,8 @@ class GenericManifestReader
     @content_script_matches = generic_manifest_hash['content_script_matches']
     @firefox_id = generic_manifest_hash['firefox_id']
     @description = generic_manifest_hash['description']
+    @cfbundleversion = generic_manifest_hash['cfbundleversion']
+    @cfbundleidentifier = generic_manifest_hash['cfbundleidentifier']
   end
 
 end

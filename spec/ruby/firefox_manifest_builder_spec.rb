@@ -8,7 +8,9 @@ describe FirefoxManifestBuilder do
         'version' => 9.9,
         'author' => 'Meee',
         'content_script_matches' => 'somesite.com',
-        'firefox_id' => '123'
+        'firefox_id' => '123',
+        'cfbundleversion' => '123',
+        'cfbundleidentifier' => 'com.foo.bar',
     }
     gmr = GenericManifestReader.new(generic_manifest)
     @fmb = FirefoxManifestBuilder.new(gmr)

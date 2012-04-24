@@ -9,7 +9,9 @@ describe GenericManifestReader do
           'name' => 'name',
           'content_script_matches' => 'site.com',
           'firefox_id' => 'numbers and letters',
-          'description' => 'just for testing'
+          'description' => 'just for testing',
+          'cfbundleversion' => '123',
+          'cfbundleidentifier' => 'com.foo.bar',
       }
     end
 
@@ -52,6 +54,16 @@ describe GenericManifestReader do
       @all_options.delete('firefox_id')
       lambda { GenericManifestReader.new(@all_options) }.should raise_error "firefox_id required"
     end
+
+    it "throws if no cfbundleidentifier" do
+      @all_options.delete('cfbundleidentifier')
+      lambda { GenericManifestReader.new(@all_options) }.should raise_error "cfbundleidentifier required"
+    end
+
+    it "throws if no cfbundleversion" do
+      @all_options.delete('cfbundleversion')
+      lambda { GenericManifestReader.new(@all_options) }.should raise_error "cfbundleversion required"
+    end
   end
 
   describe "accessors " do
@@ -62,7 +74,9 @@ describe GenericManifestReader do
           'author' => 'Jake Jake',
           'content_script_matches' => 'foo.com/*',
           'firefox_id' => 'ffid',
-          'description' => 'description yo'
+          'description' => 'description yo',
+          'cfbundleversion' => '123',
+          'cfbundleidentifier' => 'com.foo.bar',
       )
     end
 
@@ -88,6 +102,14 @@ describe GenericManifestReader do
 
     it "returns firefox_id" do
       @gmr.firefox_id.should == 'ffid'
+    end
+
+    it "returns cfbundleidentifier" do
+      @gmr.cfbundleidentifier.should == 'com.foo.bar'
+    end
+
+    it "returns cfbundleversion" do
+      @gmr.cfbundleversion.should == '123'
     end
   end
 end
