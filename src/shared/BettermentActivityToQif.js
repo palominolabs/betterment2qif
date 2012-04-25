@@ -54,7 +54,8 @@ function BettermentActivityToQif(bettermentQifBuilder) {
 
         return {
             qif:bettermentQifBuilder.toQifString(),
-            numTransactions:numTransactions
+            numTransactions:numTransactions,
+            computedBalance:bettermentQifBuilder.bettermentSharePrice * bettermentQifBuilder.bettermentSharesHeld
         };
     };
 }

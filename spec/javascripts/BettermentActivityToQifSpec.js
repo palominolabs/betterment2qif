@@ -109,8 +109,17 @@ describe('bettermentActivityToQif', function () {
         spyOn(bettermentQifBuilder, 'withdrawal');
     });
 
-    it('should return result of qif builder', function () {
-        expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).qif).toEqual('badger');
+    describe('convertBettermentActivityXMLDoc', function () {
+        it('should return result of qif builder', function () {
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).qif).toEqual('badger');
+        });
+
+        it('should return computed final balance', function() {
+            bettermentQifBuilder.bettermentSharePrice = 123;
+            bettermentQifBuilder.bettermentSharesHeld = 4.56789;
+
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).computedBalance).toEqual(561.85047);
+        })
     });
 
     describe('account bonus', function () {
@@ -184,14 +193,14 @@ describe('bettermentActivityToQif', function () {
         });
     });
 
-    describe('withdrawal', function() {
-        it('makes correct betterment qif builder call', function() {
-           bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(WITHDRAWAL_XML));
+    describe('withdrawal', function () {
+        it('makes correct betterment qif builder call', function () {
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(WITHDRAWAL_XML));
 
             expect(bettermentQifBuilder.withdrawal).toHaveBeenCalledWith(date, -69.69);
         });
 
-        it('counts as 1 transaction', function(){
+        it('counts as 1 transaction', function () {
             expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(WITHDRAWAL_XML)).numTransactions).toEqual(1);
         });
     });
