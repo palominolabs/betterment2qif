@@ -1,3 +1,5 @@
+"!https://secure.travis-ci.org/palominolabs/betterment2qif.png!":http://travis-ci.org/palominolabs/betterment2qif.png
+
 == Generating a key for signing Chrome extensions ==
 openssl genrsa 1024 > chrome_private_key.pem
 
