@@ -76,6 +76,19 @@ describe('bettermentActivityToQif', function () {
         + MARKET_CHANGE_XML
         + '</transaction>';
 
+    var WITHDRAWAL_XML = '<transaction>'
+        + COMMON_XML
+        + '<amount>-69.69</amount>'
+        + '<balance>1234.56</balance>'
+        + '<description>Withdrawal to ****XXXX</description>'
+        + '<stage>Funds settling</stage>'
+        + '<estimatedCompletionDate>Jan 1</estimatedCompletionDate>'
+        + '<type>WITHDRAWAL</type>'
+        + '<typeID>0</typeID>'
+        + '<pending>false</pending>'
+        + '<failed>false</failed>'
+        + '</transaction>';
+
     beforeEach(function () {
         date = new Date(0);
         date.setDate(10);
@@ -93,6 +106,7 @@ describe('bettermentActivityToQif', function () {
         spyOn(bettermentQifBuilder, 'dividend');
         spyOn(bettermentQifBuilder, 'deposit');
         spyOn(bettermentQifBuilder, 'marketChange');
+        spyOn(bettermentQifBuilder, 'withdrawal');
     });
 
     it('should return result of qif builder', function () {
@@ -167,6 +181,18 @@ describe('bettermentActivityToQif', function () {
 
         it('counts as 1 transaction for nested market changes', function () {
             expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(NESTED_MARKET_CHANGE_XML)).numTransactions).toEqual(1);
+        });
+    });
+
+    describe('withdrawal', function() {
+        it('makes correct betterment qif builder call', function() {
+           bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(WITHDRAWAL_XML));
+
+            expect(bettermentQifBuilder.withdrawal).toHaveBeenCalledWith(date, -69.69);
+        });
+
+        it('counts as 1 transaction', function(){
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(WITHDRAWAL_XML)).numTransactions).toEqual(1);
         });
     });
 });

@@ -84,6 +84,27 @@ describe("BettermentQifBuilder", function () {
         });
     });
 
+    describe('#withdrawal', function () {
+        it('adds to qif correctly', function () {
+            bettermentQifBuilder.withdrawal(date, -666);
+
+            expect(qifBuilder.sell).toHaveBeenCalledWith(date, 'BETTERMENT', 6.66, 100);
+            expect(qifBuilder.adjust).toHaveBeenCalledWith(date, -666, {memo:'Withdrawal'});
+        });
+
+        it('decreases share quantity', function () {
+            bettermentQifBuilder.withdrawal(date, -999);
+
+            expect(bettermentQifBuilder.bettermentSharesHeld).toEqual(-9.99);
+        });
+
+        it("doesn't adjust share price", function () {
+            bettermentQifBuilder.withdrawal(date, -321);
+
+            expect(bettermentQifBuilder.bettermentSharePrice).toEqual(100);
+        });
+    });
+
     describe('#fee', function () {
         it('adds to qif correctly', function () {
             bettermentQifBuilder.fee(date, -80);

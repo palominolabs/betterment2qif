@@ -35,6 +35,16 @@ function BettermentQifBuilder(qifBuilder) {
         this.bettermentSharesHeld += sharesAdded;
     };
 
+    this.withdrawal = function (date, amount) {
+        // Amount will be a negative number for withdrawal
+        var sharesAdded = amount / this.bettermentSharePrice;
+
+        qifBuilder.sell(date, BETTERMENT_STOCK_SYMBOL, -sharesAdded, this.bettermentSharePrice);
+        qifBuilder.adjust(date, amount, {memo:'Withdrawal'});
+
+        this.bettermentSharesHeld += sharesAdded;
+    };
+
     this.fee = function (date, amount) {
         // Amount will be a negative number so * by -1 to get the number
         // of shares sold

@@ -36,7 +36,8 @@ function BettermentActivityToQif(bettermentQifBuilder) {
         FEE:'fee',
         DIVIDEND:'dividend',
         DEPOSIT:'deposit',
-        MARKET_CHANGE:'marketChange'
+        MARKET_CHANGE:'marketChange',
+        WITHDRAWAL:'withdrawal'
     };
 
     this.convertBettermentActivityXMLDoc = function (xmlDoc) {
