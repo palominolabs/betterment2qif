@@ -4,6 +4,14 @@ Bundler.require
 
 load 'jasmine/tasks/jasmine.rake'
 
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec)
+
+#RSpec::Core::RakeTask.new(:spec) do |t|
+#  t.spec_files = Dir.glob('spec/ruby/**/*_spec.rb')
+#  t.spec_opts << '--format specdoc'
+#end
+
 Dir['lib/**/*.rb'].each { |lib_file| require_relative(lib_file) }
 
 project_root_dir = Pathname(File.dirname(__FILE__))
@@ -18,6 +26,11 @@ safari_build_dir = build_dir.join('safari.safariextension')
 release_dir = build_dir.join('release')
 
 logger = Logger.new(STDOUT)
+
+desc "Runs all tests"
+task default: %w(jasmine:ci spec) do
+
+end
 
 desc "Bundles all JS files into a single huge file"
 task :sprockets do
