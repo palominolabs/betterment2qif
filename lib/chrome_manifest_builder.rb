@@ -1,6 +1,9 @@
 class ChromeManifestBuilder
+  attr_accessor :web_accessible_resources
+
   def initialize(generic_manifest_reader)
     @generic_manifest_reader = generic_manifest_reader
+    @web_accessible_resources = []
   end
 
   def build
@@ -15,6 +18,7 @@ class ChromeManifestBuilder
                                             js: %w(chrome.js),
                                             run_at: 'document_end'
                                         }],
+                      web_accessible_resources: @web_accessible_resources.sort,
                   })
   end
 

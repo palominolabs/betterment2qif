@@ -16,6 +16,7 @@ Dir['lib/**/*.rb'].each { |lib_file| require_relative(lib_file) }
 
 project_root_dir = Pathname(File.dirname(__FILE__))
 source_dir = project_root_dir.join('src')
+images_dir = project_root_dir.join('images')
 
 build_dir = project_root_dir.join('build')
 intermediates_dir = build_dir.join('intermediates')
@@ -60,9 +61,12 @@ namespace :compile do
     FileUtils.rm_rf(chrome_build_dir)
     FileUtils.mkdir_p(chrome_build_dir)
 
+    FileUtils.cp_r(images_dir, File.join(chrome_build_dir, 'images'))
     FileUtils.cp(File.join(intermediates_dir, 'chrome.js'), File.join(chrome_build_dir, 'chrome.js'))
 
-    open(File.join(chrome_build_dir, 'manifest.json'), 'w+') { |fh| fh.write(ChromeManifestBuilder.new(generic_extension_manifest).build) }
+    chrome_manifest_builder = ChromeManifestBuilder.new(generic_extension_manifest)
+    chrome_manifest_builder.web_accessible_resources = Dir["#{images_dir}/**/*"].map { |image| Pathname.new(image).relative_path_from(project_root_dir) }
+    open(File.join(chrome_build_dir, 'manifest.json'), 'w+') { |fh| fh.write(chrome_manifest_builder.build) }
   end
 
   desc "Build umpackaged version of FF extension for testing"
@@ -98,6 +102,7 @@ namespace :compile do
 
     safari_manifest_builder = SafariManifestBuilder.new(generic_extension_manifest)
 
+    FileUtils.cp_r(images_dir, File.join(safari_build_dir, 'images'))
     FileUtils.cp(File.join(intermediates_dir, 'safari.js'), File.join(safari_build_dir, 'safari.js'))
 
     open(File.join(safari_build_dir, 'Info.plist'), 'w') do |fh|

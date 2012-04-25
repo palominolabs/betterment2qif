@@ -14,8 +14,8 @@ describe ChromeManifestBuilder do
           'cfbundleidentifier' => 'com.foo.bar',
       }
       gmr = GenericManifestReader.new(generic_manifest)
-      cmb = ChromeManifestBuilder.new(gmr)
-      @chrome_manifest = JSON.parse(cmb.build, :symbolize_names => true)
+      @cmb = ChromeManifestBuilder.new(gmr)
+      @chrome_manifest = JSON.parse(@cmb.build, :symbolize_names => true)
     end
 
     it "sets name" do
@@ -43,5 +43,18 @@ describe ChromeManifestBuilder do
       ]
     end
 
+    describe '#web_accessible_resources' do
+      it "manifest web_accessible_resources is empty array if web_accessible_resources never set" do
+        @chrome_manifest[:web_accessible_resources].should == []
+      end
+
+      it "includes web_accessible_resources in manifest if specified" do
+        @cmb.web_accessible_resources = %w(thing1.txt images/foo.png css/bar.png)
+
+        @chrome_manifest = JSON.parse(@cmb.build, :symbolize_names => true)
+
+        @chrome_manifest[:web_accessible_resources].should == %w(css/bar.png images/foo.png thing1.txt)
+      end
+    end
   end
 end
