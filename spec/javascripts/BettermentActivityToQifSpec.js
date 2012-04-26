@@ -96,6 +96,48 @@ describe('bettermentActivityToQif', function () {
         + '</error>'
         + '</errors>';
 
+    var TRANSFER_TO_OTHER_GOAL_XML = '<allocation>'
+        + COMMON_XML
+        + '<allocation>0.60</allocation>'
+        + '<lastAllocation>0.60</lastAllocation>'
+        + '<description>Transfer to Another One!</description>'
+        + '<amount>-100.00</amount>'
+        + '<typeID>22</typeID>'
+        + '<balance>9999.99</balance>'
+        + '</allocation>';
+
+    var TRANSFER_FROM_OTHER_GOAL_XML = '<allocation>'
+        + COMMON_XML
+        + '<allocation>0.60</allocation>'
+        + '<lastAllocation>0.60</lastAllocation>'
+        + '<description>Transfer from Another One!</description>'
+        + '<amount>12.34</amount>'
+        + '<typeID>23</typeID>'
+        + '<balance>3.99</balance>'
+        + '</allocation>';
+
+    var REBALANCE_XML = '<allocation>'
+        + COMMON_XML
+        + '<allocation>0.60</allocation>'
+        + '<lastAllocation>0.60</lastAllocation>'
+        + '<description>Rebalance</description>'
+        + '<changeDesc>40% bonds, 60% stocks</changeDesc>'
+        + '<amount>0.00</amount>'
+        + '<typeID>17</typeID>'
+        + '<balance>11111.11</balance>'
+        + '</allocation>';
+
+    var ALLOCATION_CHANGE_XML = '<allocation>'
+        + COMMON_XML
+        + '<allocation>0</allocation>'
+        + '<lastAllocation>0.40</lastAllocation>'
+        + '<description>Allocation Change</description>'
+        + '<changeDesc>100% bonds</changeDesc>'
+        + '<amount>0.00</amount>'
+        + '<typeID>9</typeID>'
+        + '<balance>3.99</balance>'
+        + '</allocation>';
+
     beforeEach(function () {
         date = new Date(0);
         date.setDate(10);
@@ -128,7 +170,7 @@ describe('bettermentActivityToQif', function () {
             expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).computedBalance).toEqual(561.85047);
         });
 
-        it('should throw if not logged in', function() {
+        it('should throw if not logged in', function () {
             expect(
                 function () {
                     bettermentActivityToQif.convertBettermentActivityXMLDoc($($.parseXML(NOT_LOGGED_IN_XML)));
@@ -216,6 +258,44 @@ describe('bettermentActivityToQif', function () {
 
         it('counts as 1 transaction', function () {
             expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(WITHDRAWAL_XML)).numTransactions).toEqual(1);
+        });
+    });
+
+    describe('allocation', function () {
+        it('treats withdrawal to another goal as withdrawal', function () {
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(TRANSFER_TO_OTHER_GOAL_XML));
+
+            expect(bettermentQifBuilder.withdrawal).toHaveBeenCalledWith(date, -100);
+        });
+
+        it('treats withdrawal to another goal as 1 transaction', function () {
+            var result = bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(TRANSFER_TO_OTHER_GOAL_XML));
+
+            expect(result.numTransactions).toEqual(1);
+        });
+
+        it('treats deposit from another goal as deposit', function () {
+            bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(TRANSFER_FROM_OTHER_GOAL_XML));
+
+            expect(bettermentQifBuilder.deposit).toHaveBeenCalledWith(date, 12.34);
+        });
+
+        it('treats deposit from another goal as a transaction', function () {
+            var result = bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(TRANSFER_FROM_OTHER_GOAL_XML));
+
+            expect(result.numTransactions).toEqual(1);
+        });
+
+        it('ignores rebalance allocation', function () {
+            var result = bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(REBALANCE_XML));
+
+            expect(result.numTransactions).toEqual(0);
+        });
+
+        it('ignores stock/bond allocation change', function () {
+            var result = bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ALLOCATION_CHANGE_XML));
+
+            expect(result.numTransactions).toEqual(0);
         });
     });
 });

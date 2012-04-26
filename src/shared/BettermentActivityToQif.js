@@ -1,7 +1,7 @@
 function BettermentActivityToQif(bettermentQifBuilder) {
 
     function assertLoggedIn(xmlDoc) {
-        if(xmlDoc.find('error').length > 0) {
+        if (xmlDoc.find('error').length > 0) {
             throw "Not logged in";
         }
     }
@@ -11,7 +11,7 @@ function BettermentActivityToQif(bettermentQifBuilder) {
 
         assertLoggedIn(xmlDoc);
 
-        $.each(xmlDoc.find('activities > transaction'), function (idx, node) {
+        $.each(xmlDoc.find('activities > *'), function (idx, node) {
             // Convert the xml node into an easy to work with JS object
             var transactionInfo = {};
             $.each(node.childNodes, function (idx, childNode) {
@@ -27,6 +27,7 @@ function BettermentActivityToQif(bettermentQifBuilder) {
             transactionInfo.date = date;
 
             // Parse bools/floats into native types
+            transactionInfo.typeID = parseInt(transactionInfo.typeID);
             transactionInfo.amount = parseFloat(transactionInfo.amount);
             transactionInfo.balance = parseFloat(transactionInfo.balance);
             transactionInfo.failed = transactionInfo.failed == "true";
@@ -40,12 +41,24 @@ function BettermentActivityToQif(bettermentQifBuilder) {
     }
 
     var TRANSACTION_HANDLERS = {
-        ACCOUNT_BONUS:'accountBonus',
-        FEE:'fee',
-        DIVIDEND:'dividend',
-        DEPOSIT:'deposit',
-        MARKET_CHANGE:'marketChange',
-        WITHDRAWAL:'withdrawal'
+        0:'withdrawal', // to an external bank account
+        1:'deposit', // from an external bank account
+        2:'marketChange',
+        3:'fee',
+        4:'dividend',
+        // 9: allocation change
+        // 10: ?
+        // 11: ?
+        // 12: ?
+        // 13: ?
+        // 14: ?
+        // 15: ?
+        // 16: ?
+        // 17: rebalance
+        // 18: stock market update
+        19:'accountBonus',
+        22:'withdrawal', // to another goal
+        23:'deposit' // from another goal
     };
 
     this.convertBettermentActivityXMLDoc = function (xmlDoc) {
@@ -53,7 +66,7 @@ function BettermentActivityToQif(bettermentQifBuilder) {
 
         var numTransactions = 0;
         $.each(transactions, function (idx, txn) {
-            var functionName = TRANSACTION_HANDLERS[txn.type];
+            var functionName = TRANSACTION_HANDLERS[txn.typeID];
             if (functionName) {
                 bettermentQifBuilder[functionName](txn.date, txn.amount);
                 numTransactions++;
