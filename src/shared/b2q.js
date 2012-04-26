@@ -1,9 +1,13 @@
 var $body = $('body');
 var $bettermentToQif = $('<div>').css('padding', '5px').prependTo($body);
-var $finalBalance = $('<span>').prependTo($bettermentToQif);
-var $exportLink = $('<a>').css('margin-right', '10px').html('Export QIF').attr('href', '#').prependTo($bettermentToQif);
+var $exportLink = $('<a>').css({display:'block', float:'left', 'line-height':'30px', 'margin-right':'10px'}).html('Export QIF').attr('href', '#').appendTo($bettermentToQif);
+var $loadingImage = $('<img>').css({display:'none', height:'30px'}).attr('src', getExtensionResourceURL('images/loading-spinner.gif')).appendTo($bettermentToQif);
+var $finalBalance = $('<div>').css({float:'left', 'line-height':'30px', 'margin-right':'10px'}).appendTo($bettermentToQif);
+$('<br>').css('clear', 'both').appendTo($bettermentToQif);
 
 $exportLink.click(function () {
+    $loadingImage.show();
+
     $.ajax({
         type:'GET',
         url:'https://wwws.betterment.com/data/GetAllActivity',
@@ -21,6 +25,9 @@ $exportLink.click(function () {
         },
         failure:function () {
             alert('Unable to export QIF');
+        },
+        complete:function () {
+            $loadingImage.hide();
         }
     });
 });
