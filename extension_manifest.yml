@@ -1,6 +1,6 @@
 name: Betterment2Qif
 version: "1.0"
-description: The first extension that I made
+description: Allows exporting Betterment transaction information to QIF (Not associated with Betterment in any way)
 author: Manuel Wudka-Robles
 firefox_id: jid1-7OkPyi2O3TIK4w
 content_script_matches: https://wwws.betterment.com/App.html*
