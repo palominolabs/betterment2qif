@@ -84,8 +84,11 @@ namespace :compile do
     firefox_manifest_builder = FirefoxManifestBuilder.new(generic_extension_manifest)
 
     open(File.join(firefox_lib_dir, 'main.js'), 'w') { |fh| fh.write(firefox_manifest_builder.build_mainjs) }
+    open(File.join(firefox_data_dir, 'firefox-extension-id.js'), 'w') { |fh| fh.write(firefox_manifest_builder.build_firefoxextensionjs) }
 
+    FileUtils.cp_r(images_dir, File.join(firefox_data_dir, 'images'))
     FileUtils.cp(File.join(intermediates_dir, 'firefox.js'), File.join(firefox_data_dir, 'firefox.js'))
+
 
     open(File.join(firefox_build_dir, 'package.json'), 'w') do |fh|
       fh.write(firefox_manifest_builder.build)

@@ -62,6 +62,15 @@ describe FirefoxManifestBuilder do
     end
   end
 
+  describe '#build_firefoxextensionjs' do
+    it "returns correct JS" do
+      @fmb.build_firefoxextensionjs.should ==<<EOJS
+window.FIREFOX_EXTENSION_ID = '123';
+window.FIREFOX_NAME = 'fake_ff_extension';
+EOJS
+    end
+  end
+
   describe '#build_mainjs' do
     it "returns correct JS" do
       @fmb.build_mainjs.should ==<<EOJS
@@ -70,7 +79,7 @@ const data = require('self').data;
 pageMod.PageMod({
   include: 'somesite.com',
   contentScriptWhen: 'ready',
-  contentScriptFile: data.url('firefox.js')
+  contentScriptFile: [data.url('firefox-extension-id.js'), data.url('firefox.js')]
 });
 EOJS
     end
