@@ -1,7 +1,15 @@
 function BettermentActivityToQif(bettermentQifBuilder) {
 
+    function assertLoggedIn(xmlDoc) {
+        if(xmlDoc.find('error').length > 0) {
+            throw "Not logged in";
+        }
+    }
+
     function parseActivityXmlString(xmlDoc) {
         var transactions = [];
+
+        assertLoggedIn(xmlDoc);
 
         $.each(xmlDoc.find('activities > transaction'), function (idx, node) {
             // Convert the xml node into an easy to work with JS object

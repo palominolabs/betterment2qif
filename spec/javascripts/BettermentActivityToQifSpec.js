@@ -89,6 +89,13 @@ describe('bettermentActivityToQif', function () {
         + '<failed>false</failed>'
         + '</transaction>';
 
+    var NOT_LOGGED_IN_XML = '<errors>'
+        + '<message>NOT_LOGGED_IN</message>'
+        + '<error>'
+        + '<code>NOT_LOGGED_IN</code>'
+        + '</error>'
+        + '</errors>';
+
     beforeEach(function () {
         date = new Date(0);
         date.setDate(10);
@@ -114,12 +121,19 @@ describe('bettermentActivityToQif', function () {
             expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).qif).toEqual('badger');
         });
 
-        it('should return computed final balance', function() {
+        it('should return computed final balance', function () {
             bettermentQifBuilder.bettermentSharePrice = 123;
             bettermentQifBuilder.bettermentSharesHeld = 4.56789;
 
             expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).computedBalance).toEqual(561.85047);
-        })
+        });
+
+        it('should throw if not logged in', function() {
+            expect(
+                function () {
+                    bettermentActivityToQif.convertBettermentActivityXMLDoc($($.parseXML(NOT_LOGGED_IN_XML)));
+                }).toThrow("Not logged in");
+        });
     });
 
     describe('account bonus', function () {

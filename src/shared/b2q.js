@@ -13,14 +13,18 @@ $exportLink.click(function () {
         url:'https://wwws.betterment.com/data/GetAllActivity',
         dataType:'xml',
         success:function (xml) {
-            var bettermentActivityToQif = new BettermentActivityToQif(new BettermentQifBuilder(new QifBuilder()));
-            var conversionResult = bettermentActivityToQif.convertBettermentActivityXMLDoc($(xml));
+            try {
+                var bettermentActivityToQif = new BettermentActivityToQif(new BettermentQifBuilder(new QifBuilder()));
+                var conversionResult = bettermentActivityToQif.convertBettermentActivityXMLDoc($(xml));
 
-            if (conversionResult.numTransactions > 0) {
-                $finalBalance.html('Computed balance: $' + conversionResult.computedBalance.toFixed(2));
-                window.open("data:text/plain;base64," + window.btoa(conversionResult.qif), "_blank");
-            } else {
-                alert('No transactions');
+                if (conversionResult.numTransactions > 0) {
+                    $finalBalance.html('Computed balance: $' + conversionResult.computedBalance.toFixed(2));
+                    window.open("data:text/plain;base64," + window.btoa(conversionResult.qif), "_blank");
+                } else {
+                    alert('No transactions');
+                }
+            } catch (e) {
+                alert(e);
             }
         },
         failure:function () {
