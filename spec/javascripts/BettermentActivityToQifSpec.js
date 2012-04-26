@@ -170,6 +170,12 @@ describe('bettermentActivityToQif', function () {
             expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).computedBalance).toEqual(561.85047);
         });
 
+        it('should return computed final share price', function() {
+            bettermentQifBuilder.bettermentSharePrice = 3.99;
+
+            expect(bettermentActivityToQif.convertBettermentActivityXMLDoc(makeTestXmlDoc(ACCOUNT_BONUS_XML)).sharePrice).toEqual(3.99);
+        });
+
         it('should throw if not logged in', function () {
             expect(
                 function () {
