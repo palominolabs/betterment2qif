@@ -1,7 +1,17 @@
 This project is not endorsed by or affiliated with Betterment LLC in any way.
 
-
 [![Build Status](https://secure.travis-ci.org/palominolabs/betterment2qif.png)](http://travis-ci.org/palominolabs/betterment2qif)
+
+
+Current versions of the extensions
+----------------------------------
+[Chrome](https://github.com/downloads/palominolabs/betterment2qif/chrome_extension.crx)
+
+[Safari](https://github.com/downloads/palominolabs/betterment2qif/betterment2qif.safariextz)
+
+[Firefox](https://github.com/downloads/palominolabs/betterment2qif/betterment2qif.xpi)
+
+
 
 Generating a key for signing Chrome extensions
 ----------------------------------------------
