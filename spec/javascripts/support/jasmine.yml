@@ -15,6 +15,7 @@ src_files:
     - src/shared/BettermentActivityToQif.js
     - src/shared/BettermentQifBuilder.js
     - src/shared/QifBuilder.js
+    - src/shared/BettermentApi.js
 
 # stylesheets
 #
