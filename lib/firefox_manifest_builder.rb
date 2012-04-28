@@ -28,7 +28,7 @@ const pageMod = require('page-mod');
 const data = require('self').data;
 pageMod.PageMod({
   include: '#{@generic_manifest.content_script_matches}',
-  contentScriptWhen: 'ready',
+  contentScriptWhen: 'end',
   contentScriptFile: [data.url('firefox-extension-id.js'), data.url('firefox.js')]
 });
 EOJS

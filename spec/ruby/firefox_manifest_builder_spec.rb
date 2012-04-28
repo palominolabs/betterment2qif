@@ -78,7 +78,7 @@ const pageMod = require('page-mod');
 const data = require('self').data;
 pageMod.PageMod({
   include: 'somesite.com',
-  contentScriptWhen: 'ready',
+  contentScriptWhen: 'end',
   contentScriptFile: [data.url('firefox-extension-id.js'), data.url('firefox.js')]
 });
 EOJS
