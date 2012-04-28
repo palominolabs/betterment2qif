@@ -5,7 +5,7 @@ This project is not endorsed by or affiliated with Betterment LLC in any way.
 
 Current versions of the extensions
 ----------------------------------
-[Chrome](https://github.com/downloads/palominolabs/betterment2qif/chrome_extension.crx)
+[Chrome](https://github.com/downloads/palominolabs/betterment2qif/betterment2qif.crx)
 
 [Safari](https://github.com/downloads/palominolabs/betterment2qif/betterment2qif.safariextz)
 
