@@ -19,6 +19,7 @@ BettermentApi.getAccounts(function (accounts) {
 
     $loadingImage.hide();
 }, function () {
+    $loadingImage.hide();
     alert('Unable to export QIF');
 });
 
@@ -26,22 +27,22 @@ $exportLink.click(function () {
     $loadingImage.show();
 
     BettermentApi.getAccountActivity($accountsDropdown.val(), function ($xml) {
-            try {
-                $loadingImage.hide();
+        $loadingImage.hide();
+        try {
 
-                var bettermentActivityToQif = new BettermentActivityToQif(new BettermentQifBuilder(new QifBuilder()));
-                var conversionResult = bettermentActivityToQif.convertBettermentActivityXMLDoc($xml);
+            var bettermentActivityToQif = new BettermentActivityToQif(new BettermentQifBuilder(new QifBuilder()));
+            var conversionResult = bettermentActivityToQif.convertBettermentActivityXMLDoc($xml);
 
-                if (conversionResult.numTransactions > 0) {
-                    $finalBalance.html('Computed balance: $' + conversionResult.computedBalance.toFixed(2));
-                    $finalBETTERMENTSharePrice.html('Final BETTERMENT imaginary stock share price: $' + conversionResult.sharePrice.toFixed(2));
-                    window.open("data:text/plain;base64," + window.btoa(conversionResult.qif), "_blank");
-                } else {
-                    alert('No transactions');
-                }
-            } catch (e) {
-                alert(e);
+            if (conversionResult.numTransactions > 0) {
+                $finalBalance.html('Computed balance: $' + conversionResult.computedBalance.toFixed(2));
+                $finalBETTERMENTSharePrice.html('Final BETTERMENT imaginary stock share price: $' + conversionResult.sharePrice.toFixed(2));
+                window.open("data:text/plain;base64," + window.btoa(conversionResult.qif), "_blank");
+            } else {
+                alert('No transactions');
             }
+        } catch (e) {
+            alert(e);
+        }
 
     }, function () {
         $loadingImage.hide();
